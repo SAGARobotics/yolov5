@@ -16,7 +16,7 @@ import numpy as np
 import torch
 import torchvision
 import yaml
-
+from yolov5.utils.torch_utils import nms
 from yolov5.utils.google_utils import gsutil_getsize
 from yolov5.utils.metrics import fitness
 from yolov5.utils.torch_utils import init_torch_seeds
@@ -374,7 +374,7 @@ def non_max_suppression(prediction, conf_thres=0.25, iou_thres=0.45, classes=Non
         # Batched NMS
         c = x[:, 5:6] * (0 if agnostic else max_wh)  # classes
         boxes, scores = x[:, :4] + c, x[:, 4]  # boxes (offset by class), scores
-        i = torchvision.ops.nms(boxes, scores, iou_thres)  # NMS
+        i = nms(boxes, scores, iou_thres)  # NMS
         if i.shape[0] > max_det:  # limit detections
             i = i[:max_det]
         if merge and (1 < n < 3E3):  # Merge NMS (boxes merged using weighted mean)
